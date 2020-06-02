@@ -16,7 +16,6 @@
  */
 
 import { Persistence } from '../../../src/local/persistence';
-import { PersistencePromise } from '../../../src/local/persistence_promise';
 import { BundleCache } from '../../../src/local/bundle_cache';
 import { Bundle, NamedQuery } from '../../../src/core/bundle';
 import * as bundleProto from '../../../src/protos/firestore_bundle_proto';
