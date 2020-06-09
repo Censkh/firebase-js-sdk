@@ -19,12 +19,11 @@ import { randomBytes } from 'crypto';
 import { inspect } from 'util';
 
 import { DatabaseId, DatabaseInfo } from '../core/database_info';
-import { Platform } from '../platform/platform';
+import { Platform, validateLooksLikeBase64 } from '../platform/platform';
 import { Connection } from '../remote/connection';
 import { JsonProtoSerializer } from '../remote/serializer';
-import { Code, FirestoreError } from '../util/error';
-import { ConnectivityMonitor } from './../remote/connectivity_monitor';
-import { NoopConnectivityMonitor } from './../remote/connectivity_monitor_noop';
+import { ConnectivityMonitor } from '../remote/connectivity_monitor';
+import { NoopConnectivityMonitor } from '../remote/connectivity_monitor_noop';
 
 import { GrpcConnection } from './grpc_connection';
 import { loadProtos } from './load_protos';
@@ -63,14 +62,7 @@ export class NodePlatform implements Platform {
   }
 
   atob(encoded: string): string {
-    // Node actually doesn't validate base64 strings.
-    // A quick sanity check that is not a fool-proof validation
-    if (/[^-A-Za-z0-9+/=]/.test(encoded)) {
-      throw new FirestoreError(
-        Code.INVALID_ARGUMENT,
-        'Not a valid Base64 string: ' + encoded
-      );
-    }
+    validateLooksLikeBase64(encoded);
     return new Buffer(encoded, 'base64').toString('binary');
   }
 

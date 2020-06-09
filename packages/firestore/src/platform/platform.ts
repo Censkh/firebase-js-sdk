@@ -19,7 +19,8 @@ import { DatabaseId, DatabaseInfo } from '../core/database_info';
 import { Connection } from '../remote/connection';
 import { JsonProtoSerializer } from '../remote/serializer';
 import { fail } from '../util/assert';
-import { ConnectivityMonitor } from './../remote/connectivity_monitor';
+import { ConnectivityMonitor } from '../remote/connectivity_monitor';
+import { Code, FirestoreError } from '../util/error';
 
 /**
  * Provides a common interface to load anything platform dependent, e.g.
@@ -79,5 +80,17 @@ export class PlatformSupport {
       fail('Platform not set');
     }
     return PlatformSupport.platform;
+  }
+}
+
+/** Quick sanity check that `str` may be base65 encoded. */
+export function validateLooksLikeBase64(str: string) {
+  // Node actually doesn't validate base64 strings.
+  // A quick sanity check that is not a fool-proof validation
+  if (/[^-A-Za-z0-9+/=]/.test(str)) {
+    throw new FirestoreError(
+      Code.INVALID_ARGUMENT,
+      'Not a valid Base64 string: ' + str
+    );
   }
 }
